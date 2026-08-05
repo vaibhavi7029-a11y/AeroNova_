@@ -47,7 +47,7 @@ if "data" not in st.session_state:
 
 with st.sidebar:
 
-    st.image("assets/logo.png", width=120)
+    #st.image("assets/logo.png", width=120)
 
     st.title("🌦 AeroNova")
 
