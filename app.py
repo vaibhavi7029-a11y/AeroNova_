@@ -1,5 +1,4 @@
 import streamlit as st
-import pandas as pd
 
 from weather import Weather
 from utils import (
@@ -8,7 +7,6 @@ from utils import (
     get_current_time,
     validate_city,
     weather_emoji,
-    get_aqi_status,
     app_footer,
 )
 
@@ -16,23 +14,22 @@ from styles import load_css
 from map import WeatherMap
 
 
-# ----------------------------------
+# -------------------------------------
 # Page Configuration
-# ----------------------------------
+# -------------------------------------
 
 st.set_page_config(
-    page_title="AeroNova Weather Map",
-    page_icon="🌦️",
+    page_title="AeroNova Weather",
+    page_icon="🌦",
     layout="wide",
-    initial_sidebar_state="expanded",
 )
 
 st.markdown(load_css(), unsafe_allow_html=True)
 
 
-# ----------------------------------
+# -------------------------------------
 # Session State
-# ----------------------------------
+# -------------------------------------
 
 if "weather" not in st.session_state:
     st.session_state.weather = Weather()
@@ -41,13 +38,11 @@ if "data" not in st.session_state:
     st.session_state.data = None
 
 
-# ----------------------------------
+# -------------------------------------
 # Sidebar
-# ----------------------------------
+# -------------------------------------
 
 with st.sidebar:
-
-    #st.image("assets/logo.png", width=120)
 
     st.title("🌦 AeroNova")
 
@@ -60,12 +55,12 @@ with st.sidebar:
     st.divider()
 
     city = st.text_input(
-        "📍 Search City",
-        placeholder="Enter city name..."
+        "📍 Enter City",
+        placeholder="Mumbai"
     )
 
     search = st.button(
-        "🔍 Search Weather",
+        "🔍 Get Weather",
         use_container_width=True
     )
 
@@ -73,18 +68,22 @@ with st.sidebar:
 
     st.info(
         """
-        ### About
+### Features
 
-        ✔ Live Weather
+✅ Live Weather
 
-        ✔ Interactive Map
+✅ Interactive Map
 
-        ✔ AQI
+✅ Temperature
 
-        ✔ 7 Day Forecast
+✅ Humidity
 
-        ✔ Weather Dashboard
-        """
+✅ Wind Speed
+
+✅ Pressure
+
+✅ Visibility
+"""
     )
 
     st.divider()
@@ -92,40 +91,40 @@ with st.sidebar:
     st.caption(app_footer())
 
 
-# ----------------------------------
+# -------------------------------------
 # Header
-# ----------------------------------
+# -------------------------------------
 
 st.markdown(
     """
-    <div class="main-title">
-        🌦 AeroNova Weather Map
-    </div>
-    """,
-    unsafe_allow_html=True
+<div class="main-title">
+🌦 AeroNova Weather Dashboard
+</div>
+""",
+    unsafe_allow_html=True,
 )
 
 st.markdown(
     """
-    <div class="sub-title">
-        Premium Real-Time Weather Dashboard
-    </div>
-    """,
-    unsafe_allow_html=True
+<div class="sub-title">
+Live Weather Information using OpenWeather API
+</div>
+""",
+    unsafe_allow_html=True,
 )
 
 st.write("")
 
 
-# ----------------------------------
-# Search Weather
-# ----------------------------------
+# -------------------------------------
+# Search
+# -------------------------------------
 
 if search:
 
     if validate_city(city):
 
-        with st.spinner("Fetching weather..."):
+        with st.spinner("Fetching Weather..."):
 
             st.session_state.data = (
                 st.session_state.weather.get_weather(city)
@@ -133,11 +132,11 @@ if search:
 
     else:
 
-        st.warning("Please enter a valid city name.")
+        st.warning("Please enter a city name.")
 
-# ----------------------------------
+# -------------------------------------
 # Weather Dashboard
-# ----------------------------------
+# -------------------------------------
 
 if st.session_state.data:
 
@@ -147,42 +146,43 @@ if st.session_state.data:
 
         col1, col2 = st.columns([1.2, 1])
 
-        # -------------------------
-        # Left Side
-        # -------------------------
+        # -----------------------------
+        # Left Panel
+        # -----------------------------
 
         with col1:
 
             st.markdown(
                 f"""
-                <div class="glass-card">
+<div class="glass-card">
 
-                <div class="weather-title">
+<h2 style="text-align:center;">
+{weather_emoji(data["condition"])}
+{data["city"]}, {data["country"]}
+</h2>
 
-                {weather_emoji(data["condition"])}
-                {data["city"]}, {data["country"]}
+<p style="text-align:center;">
+<img src="{data['icon']}" width="90">
+</p>
 
-                </div>
+<h1 style="text-align:center;">
+{data["temperature"]} °C
+</h1>
 
-                <br>
+<h4 style="text-align:center;">
+{data["description"].title()}
+</h4>
 
-                <h1 style="text-align:center;">
-                {data["temperature"]}°C
-                </h1>
+<p style="text-align:center;">
+Feels Like {data["feels_like"]} °C
+</p>
 
-                <h4 style="text-align:center;">
-                {data["condition"]}
-                </h4>
-
-                <p style="text-align:center;">
-                Feels Like :
-                {data["feels_like"]}°C
-                </p>
-
-                </div>
-                """,
-                unsafe_allow_html=True
+</div>
+""",
+                unsafe_allow_html=True,
             )
+
+            st.write("")
 
             c1, c2, c3 = st.columns(3)
 
@@ -193,70 +193,44 @@ if st.session_state.data:
 
             c2.metric(
                 "💨 Wind",
-                f'{data["wind"]} km/h'
+                f'{data["wind"]} m/s'
             )
 
             c3.metric(
-                "☀ UV",
-                data["uv"]
+                "🌬 Pressure",
+                f'{data["pressure"]} hPa'
             )
 
-            c4, c5, c6 = st.columns(3)
+            st.write("")
+
+            c4, c5 = st.columns(2)
 
             c4.metric(
-                "🌬 Pressure",
-                f'{data["pressure"]} mb'
+                "👁 Visibility",
+                f'{data["visibility"]/1000:.1f} km'
             )
 
             c5.metric(
-                "👁 Visibility",
-                f'{data["visibility"]} km'
+                "🌡 Feels Like",
+                f'{data["feels_like"]} °C'
             )
 
-            c6.metric(
-                "🧭 Direction",
-                data["wind_dir"]
-            )
+            st.write("")
 
-            st.markdown("### 🌿 Air Quality")
+            st.subheader("📍 Location")
 
-            aqi = data["air_quality"]
+            st.write(f"**City:** {data['city']}")
+            st.write(f"**Country:** {data['country']}")
+            st.write(f"**Latitude:** {data['lat']}")
+            st.write(f"**Longitude:** {data['lon']}")
 
-            if "us-epa-index" in aqi:
-
-                st.success(
-                    get_aqi_status(aqi["us-epa-index"])
-                )
-
-            st.markdown("### 📍 Location")
-
-            st.write(
-                f"**Region :** {data['region']}"
-            )
-
-            st.write(
-                f"**Latitude :** {data['lat']}"
-            )
-
-            st.write(
-                f"**Longitude :** {data['lon']}"
-            )
-
-            st.write(
-                f"**Local Time :** {data['localtime']}"
-            )
-
-            st.write(
-                f"**Last Updated :** {data['last_updated']}"
-            )
-
-        # -------------------------
-        # Right Side
-        # -------------------------
+        # -----------------------------
+        # Right Panel
+        # -----------------------------
 
         with col2:
 
-            st.markdown("## 🗺 Interactive Weather Map")
+            st.subheader("🗺 Weather Map")
 
             WeatherMap.show(
                 data["lat"],
@@ -270,88 +244,101 @@ if st.session_state.data:
 
         st.error(data["message"])
 
-# ----------------------------------
-# 7-Day Forecast
-# ----------------------------------
+        # -------------------------------------
+# Footer
+# -------------------------------------
+
+st.divider()
+
+st.markdown(
+    """
+    <div class="glass-card">
+
+    <h3 align="center">🌦 AeroNova Weather Dashboard</h3>
+
+    <p align="center">
+    Live Weather Information powered by OpenWeather API
+    </p>
+
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+st.write("")
+
+# -------------------------------------
+# Weather Tips
+# -------------------------------------
 
 if st.session_state.data and st.session_state.data["success"]:
 
-    st.divider()
+    temp = st.session_state.data["temperature"]
 
-    st.subheader("📅 7-Day Weather Forecast")
+    st.subheader("💡 Weather Tips")
 
-    forecast = st.session_state.data["forecast"]
+    if temp >= 35:
 
-    rows = []
+        st.warning(
+            "🔥 It's very hot. Stay hydrated and avoid direct sunlight."
+        )
 
-    for day in forecast:
+    elif temp >= 25:
 
-        rows.append({
+        st.info(
+            "😎 Pleasant weather. Great day for outdoor activities."
+        )
 
-            "Date": day["date"],
+    elif temp >= 15:
 
-            "Condition": day["day"]["condition"]["text"],
+        st.success(
+            "🌤 Cool and comfortable weather."
+        )
 
-            "Max °C": day["day"]["maxtemp_c"],
+    else:
 
-            "Min °C": day["day"]["mintemp_c"],
-
-            "Avg °C": day["day"]["avgtemp_c"],
-
-            "Humidity %": day["day"]["avghumidity"],
-
-            "Rain %": day["day"]["daily_chance_of_rain"]
-
-        })
-
-    df = pd.DataFrame(rows)
-
-    st.dataframe(
-        df,
-        use_container_width=True,
-        hide_index=True
-    )
-
-    # -------------------------------
-    # Sunrise / Sunset
-    # -------------------------------
-
-    st.divider()
-
-    st.subheader("🌅 Sun & Moon")
-
-    today = forecast[0]["astro"]
-
-    c1, c2, c3, c4 = st.columns(4)
-
-    c1.metric("🌅 Sunrise", today["sunrise"])
-
-    c2.metric("🌇 Sunset", today["sunset"])
-
-    c3.metric("🌙 Moonrise", today["moonrise"])
-
-    c4.metric("🌑 Moonset", today["moonset"])
+        st.warning(
+            "🧥 It's cold outside. Wear warm clothes."
+        )
 
 
-    # -------------------------------
-    # Footer
-    # -------------------------------
+# -------------------------------------
+# About
+# -------------------------------------
 
-    st.divider()
+with st.expander("ℹ About AeroNova"):
 
-    st.markdown(
-        """
-        <div class="footer">
+    st.markdown("""
+### AeroNova Weather Dashboard
 
-        🌦 <b>AeroNova Weather Map</b><br><br>
+Features
 
-        Powered by <b>WeatherAPI</b><br>
+- 🌦 Live Weather
+- 🌡 Temperature
+- 💧 Humidity
+- 💨 Wind Speed
+- 🌬 Pressure
+- 👁 Visibility
+- 🗺 Interactive Map
+- 📍 Latitude & Longitude
 
-        Built using <b>Python • Streamlit • Folium</b><br><br>
+Built using
 
-        ❤️ Made by Vaibhavi
+- Python
+- Streamlit
+- OpenWeather API
+- Folium
+""")
 
-        </div>
-        """,
-        unsafe_allow_html=True
-  )
+
+# -------------------------------------
+# Bottom Footer
+# -------------------------------------
+
+st.divider()
+
+st.caption("🌦 AeroNova Weather Dashboard v1.0")
+
+st.caption("Powered by OpenWeather API")
+
+st.caption("Made with ❤️ using Streamlit")
