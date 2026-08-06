@@ -29,19 +29,20 @@ class Weather:
                 }
 
             return {
-                "success": True,
-                "city": data["name"],
-                "country": data["sys"]["country"],
-                "lat": data["coord"]["lat"],
-                "lon": data["coord"]["lon"],
-                "temperature": data["main"]["temp"],
-                "feels_like": data["main"]["feels_like"],
-                "humidity": data["main"]["humidity"],
-                "pressure": data["main"]["pressure"],
-                "condition": data["weather"][0]["main"],
-                "description": data["weather"][0]["description"],
-                "icon": f"https://openweathermap.org/img/wn/{data['weather'][0]['icon']}@2x.png",
-                "wind": data["wind"]["speed"]
+    "success": True,
+    "city": data["name"],
+    "country": data["sys"]["country"],
+    "lat": data["coord"]["lat"],
+    "lon": data["coord"]["lon"],
+    "temperature": data["main"]["temp"],
+    "feels_like": data["main"]["feels_like"],
+    "humidity": data["main"]["humidity"],
+    "pressure": data["main"]["pressure"],
+    "visibility": data["visibility"],   
+    "condition": data["weather"][0]["main"],
+    "description": data["weather"][0]["description"],
+    "icon": f"https://openweathermap.org/img/wn/{data['weather'][0]['icon']}@2x.png",
+    "wind": data["wind"]["speed"]
             }
 
         except Exception as e:
