@@ -1,11 +1,11 @@
 import requests
-from config import WEATHER_API_KEY, BASE_URL
+from config import OPENWEATHER_API_KEY, BASE_URL
 
 
 class Weather:
 
     def __init__(self):
-        self.api_key = WEATHER_API_KEY
+        self.api_key = OPENWEATHER_API_KEY
 
     def get_weather(self, city):
 
