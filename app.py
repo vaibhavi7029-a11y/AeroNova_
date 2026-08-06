@@ -1,5 +1,8 @@
 import streamlit as st
 
+from config import OPENWEATHER_API_KEY
+
+st.write("API:", OPENWEATHER_API_KEY)
 from weather import Weather
 from utils import (
     greeting,
