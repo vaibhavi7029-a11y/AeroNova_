@@ -1,8 +1,6 @@
 import streamlit as st
 
 from config import OPENWEATHER_API_KEY
-
-st.write("API:", OPENWEATHER_API_KEY)
 from weather import Weather
 from utils import (
     greeting,
@@ -12,9 +10,17 @@ from utils import (
     weather_emoji,
     app_footer,
 )
-
 from styles import load_css
 from map import WeatherMap
+
+st.set_page_config(
+    page_title="AeroNova Weather Dashboard",
+    page_icon="🌦️",
+    layout="wide"
+)
+
+# Debug
+st.write("API:", OPENWEATHER_API_KEY)
 
 
 # -------------------------------------
